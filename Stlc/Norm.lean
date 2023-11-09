@@ -2,7 +2,7 @@ import Stlc.Reduce
 
 def WeakNormal (t : Term n) := ∃ t', t ⟶* t' ∧ Normal t'
 
-inductive StrongNormal : Term n → Prop
+inductive StrongNormal : Term n → Prop where
 | sn : (∀ t', t ⟶ t' → StrongNormal t') → StrongNormal t
 
 theorem StrongNormal.weak_normal : StrongNormal t → WeakNormal t := by
@@ -16,7 +16,7 @@ theorem StrongNormal.weak_normal : StrongNormal t → WeakNormal t := by
     · constructor <;> assumption
     · assumption
 
-theorem StrongNormal.iff_no_infinite_reduction {t : Term n} :
+theorem StrongNormal.no_infinite_reduction {t : Term n} :
   StrongNormal t →
   ¬ ∃ (f : Nat → Term n), f 0 = t ∧ ∀ i, f i ⟶ f (i + 1) := by
   intro h
@@ -103,9 +103,9 @@ def KripkeSem (Γ : Context n) (t : Term n) : Ty → Prop
 | T₁ * T₂ => KripkeSem Γ t.fst T₁ ∧ KripkeSem Γ t.snd T₂
 notation:50 Γ " ⊨ " t " : " T:50 => KripkeSem Γ t T
 
-def Subst.KripkeSem (Γ : Context m) (σ : Subst n m) (Δ : Context n) :=
+def KripkeSem.SubstSem (Γ : Context m) (σ : Subst n m) (Δ : Context n) :=
   ∀ x, Γ ⊨ σ x : Δ.get x
-notation:50 Γ " ⊨ " σ " :ₛ " Δ:50 => Subst.KripkeSem Γ σ Δ
+notation:50 Γ " ⊨ " σ " :ₛ " Δ:50 => KripkeSem.SubstSem Γ σ Δ
 
 lemma KripkeSem.weaken {t : Term n} :
   Γ ⊆[ρ] Δ → Γ ⊨ t : T → Δ ⊨ t[ρ]ʷ : T := by
