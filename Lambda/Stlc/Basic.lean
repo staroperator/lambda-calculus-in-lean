@@ -3,10 +3,7 @@ import Mathlib.Tactic.Cases
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.SolveByElim
 import Aesop
-
-inductive Fin' : Nat → Type where
-| fz : Fin' (n + 1)
-| fs : Fin' n → Fin' (n + 1)
+import Lambda.Fin
 
 open Fin'
 

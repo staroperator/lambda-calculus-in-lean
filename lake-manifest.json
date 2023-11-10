@@ -4,7 +4,7 @@
  [{"git":
    {"url": "https://github.com/leanprover-community/mathlib4.git",
     "subDir?": null,
-    "rev": "c97b9b00802c2ed343d9ac73e59be287428dbcf0",
+    "rev": "ad65c15d60f6a89e359a9c4b1d884c04dc0af081",
     "opts": {},
     "name": "mathlib",
     "inputRev?": null,
@@ -12,7 +12,7 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "869c615eb10130c0637a7bc038e2b80253559913",
+    "rev": "fb07d160aff0e8bdf403a78a5167fc7acf9c8227",
     "opts": {},
     "name": "std",
     "inputRev?": "main",
@@ -49,4 +49,4 @@
     "name": "proofwidgets",
     "inputRev?": "v0.0.21",
     "inherited": true}}],
- "name": "stlc"}
+ "name": "«lambda-calculus»"}

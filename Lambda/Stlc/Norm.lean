@@ -1,4 +1,4 @@
-import Stlc.Reduce
+import Lambda.Stlc.Reduce
 
 def WeakNormal (t : Term n) := ∃ t', t ⟶* t' ∧ Normal t'
 
