@@ -15,15 +15,7 @@ inductive Ty where
 infix:70 " ⇒ " => Ty.fn
 instance : Mul Ty := ⟨Ty.prod⟩
 
-inductive Context : Nat → Type where
-| nil : Context 0
-| cons : Context n → Ty → Context (n + 1)
-instance : EmptyCollection (Context 0) := ⟨Context.nil⟩
-infix:60 " ,' " => Context.cons
-
-def Context.get : Context n → Fin' n → Ty
-| _,' T, fz => T
-| Γ,' _, fs x => Γ.get x
+@[reducible] def Context := Vec Ty
 
 
 

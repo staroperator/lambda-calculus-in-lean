@@ -48,7 +48,7 @@ theorem Typing.weaken {ρ : Weaken n m} :
     case lift _ ih =>
       cases' x with _ _ x
       · constructor
-      · simp [Context.get, Typing.inversion_var (@ih x)]
+      · simp [Vec.get, Typing.inversion_var (@ih x)]
         constructor
   case lam _ ih =>
     constructor
@@ -81,7 +81,7 @@ theorem Typing.strengthen {ρ : Weaken n m} :
       · cases y <;> simp at h
         constructor
       · cases' y with _ _ y <;> simp at h
-        simp [Context.get, Typing.inversion_var (ih (by simp; exact h))]
+        simp [Vec.get, Typing.inversion_var (ih (by simp; exact h))]
         constructor
   case lam _ ih =>
     cases t <;> simp at h
@@ -120,7 +120,7 @@ theorem Typing.cut {σ : Subst n m} :
     intro x
     cases' x with _ _ x
     · constructor
-    · simp [Context.get, Subst.lift]
+    · simp [Vec.get, Subst.lift]
       apply Typing.weaken_single
       apply h₁
   all_goals

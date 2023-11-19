@@ -308,7 +308,7 @@ theorem KripkeSem.fundamental {σ : Subst n m} :
       intro x
       cases x
       · apply KripkeSem.var
-      · simp [Context.get, Subst.lift]
+      · simp [Vec.get, Subst.lift]
         apply KripkeSem.weaken
         · constructor; apply Context.weaken_id
         · apply h₂
@@ -317,9 +317,9 @@ theorem KripkeSem.fundamental {σ : Subst n m} :
       apply ih
       intro x
       cases x
-      · simp [Subst.comp, Subst.single, Context.get]
+      · simp [Subst.comp, Subst.single, Vec.get]
         exact h₄
-      · simp [Subst.comp, Subst.lift, Context.get]
+      · simp [Subst.comp, Subst.lift, Vec.get]
         rw [Weaken.lift_of_subst, Term.shift_subst_lift, Term.shift_subst_single, ←Term.weaken_eq_subst]
         apply KripkeSem.weaken
         · exact h₃
