@@ -1,4 +1,4 @@
-import Lambda.Stlc.Typing
+import Lambda.STLC.Extrinsic.Typing
 
 inductive Step : Term n → Term n → Prop where
 | lam : Step t t' → Step (λ' T t) (λ' T t')

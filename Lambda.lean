@@ -1,5 +1,6 @@
 import Lambda.Fin
-import Lambda.Stlc.Basic
-import Lambda.Stlc.Typing
-import Lambda.Stlc.Reduce
-import Lambda.Stlc.Norm
+import Lambda.STLC.Extrinsic.Basic
+import Lambda.STLC.Extrinsic.Typing
+import Lambda.STLC.Extrinsic.Reduce
+import Lambda.STLC.Extrinsic.Norm
+import Lambda.Domain

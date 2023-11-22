@@ -1,4 +1,4 @@
-import Lambda.Stlc.Basic
+import Lambda.STLC.Extrinsic.Basic
 
 inductive Typing : Context n → Term n → Ty → Prop where
 | var : Typing Γ #x (Γ.get x)
