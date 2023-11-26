@@ -295,9 +295,17 @@ theorem R.fundamental {σ : Subst Γ Δ} :
   | fst t ih => exact (ih h).left
   | snd t ih => exact (ih h).right
 
-theorem strong_normalization : StrongNormal t := by
+theorem strong_normalization (t : Term Γ T) : StrongNormal t := by
   apply R.strong_normal
   rw [←Term.subst_id (t := t)]
   apply R.fundamental
   intro _ x
   apply R.var
+
+theorem canonicity_bool {t : Term ∅ TBool} :
+  t ⟶* Term.true ∨ t ⟶* Term.false := by
+  have h := strong_normalization t
+  apply Rel.StrongNormal.weak_normal at h
+  rcases h with ⟨t', h, h'⟩
+  apply canonical_form_bool at h'
+  aesop

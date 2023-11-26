@@ -166,3 +166,35 @@ theorem normal_iff_normal_form : Normal t ↔ NormalForm t := by
       cases h₂ with
       | snd h₂ => apply ih (neutral_normal h₁); exact h₂
       | sigma₂ => simp [NeutralForm] at h₁
+
+
+
+def CanonicalForm : Term Γ T → Prop
+| λ' t | Term.true | Term.false => True
+| ⟪t₁, t₂⟫ => CanonicalForm t₁ ∧ CanonicalForm t₂
+| _ => False
+
+lemma neutral_non_canonical {t : Term ∅ T} :
+  NeutralForm t → ¬ CanonicalForm t := by
+  intro h h₁
+  cases t <;> simp [NeutralForm, CanonicalForm] at *
+
+theorem normal_canonical {t : Term ∅ T} : Normal t → CanonicalForm t := by
+  intro h
+  rw [normal_iff_normal_form] at h
+  generalize h' : (∅ : Con) = Γ at t
+  induction t with
+    (subst h'; simp [NormalForm, NeutralForm, CanonicalForm] at *)
+  | var x => cases x
+  | pair _ _ ih₁ ih₂ => exact ⟨ih₁ h.left, ih₂ h.right⟩
+  | app _ _ ih _ | ite _ _ _ ih _ _ | fst _ ih | snd _ ih =>
+    try (cases' h with h)
+    apply neutral_non_canonical
+    · exact h
+    · apply ih; apply neutral_normal; exact h
+
+theorem canonical_form_bool {t : Term ∅ TBool} :
+  Normal t → (t = Term.true ∨ t = Term.false) := by
+  intro h
+  apply normal_canonical at h
+  cases t <;> simp [CanonicalForm] at h <;> aesop
