@@ -9,7 +9,7 @@ def Ty.denot : Ty → Type
 notation "⟦" T "⟧ᵀ" => Ty.denot T
 
 def Con.denot : Con → Type
-| nil => Unit
+| [] => Unit
 | Γ,' T => Γ.denot × ⟦T⟧ᵀ
 notation "⟦" Γ "⟧ᴳ" => Con.denot Γ
 
@@ -70,8 +70,8 @@ lemma Term.denot_shift : ⟦↑ₜt⟧ᵗ ⟨d₁, d₂⟩ = ⟦t⟧ᵗ d₁ := 
   simp [Term.shift, Term.denot_weaken, Weaken.denot, Weaken.denot_id]
 
 def Subst.denot : {Γ : Con} → Subst Γ Δ → ⟦Δ⟧ᴳ → ⟦Γ⟧ᴳ
-| Con.nil, _, _ => ()
-| Con.cons _ _, σ, d => ⟨σ.tail.denot d, ⟦σ.head⟧ᵗ d⟩
+| [], _, _ => ()
+| _,' _, σ, d => ⟨σ.tail.denot d, ⟦σ.head⟧ᵗ d⟩
 notation "⟦" σ "⟧ˢ" => Subst.denot σ
 
 lemma Subst.denot_apply {σ : Subst Γ Δ} : ⟦σ x⟧ᵗ d = (Con.denot_get x) (⟦σ⟧ˢ d) := by

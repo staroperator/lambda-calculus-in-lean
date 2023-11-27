@@ -4,6 +4,7 @@
 -- import Lambda.STLC.Extrinsic.Reduce
 -- import Lambda.STLC.Extrinsic.Norm
 import Lambda.Prelude
+import Lambda.Fin
 import Lambda.STLC.Syntax
 import Lambda.STLC.Operational
 import Lambda.STLC.Confluence

@@ -1,4 +1,5 @@
 import Lambda.Prelude
+import Lambda.Fin
 
 namespace STLC
 
@@ -10,19 +11,10 @@ infixr:70 " ⇒ " => Ty.fn
 instance : Mul Ty := ⟨Ty.prod⟩
 @[match_pattern] abbrev TBool := Ty.bool
 
-inductive Con where
-| nil : Con
-| cons : Con → Ty → Con
-instance : EmptyCollection Con := ⟨Con.nil⟩
-infixl:60 ",' " => Con.cons
-
-inductive Con.Mem : Ty → Con → Type where
-| fz : Mem T (Γ,' T)
-| fs : Mem T Γ → Mem T (Γ,' T')
-infix:60 " ∈' " => Con.Mem
-export Con.Mem (fz fs)
-
-
+def Con := List Ty
+@[match_pattern] def Con.add (Γ : Con) (T : Ty) := T :: Γ
+instance : EmptyCollection Con := ⟨List.nil⟩
+infixl:60 ",' " => Con.add
 
 inductive Term : Con → Ty → Type where
 | var : T ∈' Γ → Term Γ T
@@ -52,7 +44,7 @@ prefix:max "⇑ʷ" => Weaken.lift
 
 def Weaken.id : Γ ⊆ʷ Γ :=
   match Γ with
-  | Con.nil => εʷ
+  | [] => εʷ
   | _,' _ => ⇑ʷid
 notation "idʷ" => Weaken.id
 
