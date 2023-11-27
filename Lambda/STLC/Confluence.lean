@@ -1,5 +1,7 @@
 import Lambda.STLC.Operational
 
+namespace STLC
+
 open Term in
 @[aesop unsafe [constructors]]
 inductive ParStep : Rel (Term Γ T) where
@@ -175,3 +177,5 @@ theorem church_rosser : (@Reduce Γ T).Diamond := by
   simp [←ParReduce.iff_multi_step]
   apply Rel.Multi.diamond
   exact ParStep.diamond
+
+end STLC

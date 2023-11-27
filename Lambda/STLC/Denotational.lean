@@ -1,5 +1,7 @@
 import Lambda.STLC.Operational
 
+namespace STLC
+
 def Ty.denot : Ty → Type
 | TBool => Bool
 | T₁ ⇒ T₂ => T₁.denot → T₂.denot
@@ -122,3 +124,5 @@ theorem DefEquiv.denot_eq : t₁ ≡ t₂ → ⟦t₁⟧ᵗ = ⟦t₂⟧ᵗ := b
 
 theorem denot_eq_eta : ⟦t⟧ᵗ = ⟦λ' (↑ₜt ⬝ #fz)⟧ᵗ := by
   ext d; simp [Term.denot, Con.denot_get, Term.denot_shift]
+
+end STLC

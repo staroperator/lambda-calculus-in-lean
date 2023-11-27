@@ -1,5 +1,7 @@
 import Lambda.STLC.Operational
 
+namespace STLC
+
 def StrongNormal (t : Term Γ T) := Step.StrongNormal t
 
 lemma StrongNormal.weaken : StrongNormal t → StrongNormal (t[ρ]ʷ) := by
@@ -309,3 +311,5 @@ theorem canonicity_bool {t : Term ∅ TBool} :
   rcases h with ⟨t', h, h'⟩
   apply canonical_form_bool at h'
   aesop
+
+end STLC

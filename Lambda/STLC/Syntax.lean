@@ -1,5 +1,7 @@
 import Lambda.Prelude
 
+namespace STLC
+
 inductive Ty where
 | bool : Ty
 | fn : Ty → Ty → Ty
@@ -245,3 +247,4 @@ lemma substitution_weaken :
   simp [Term.weaken_eq_subst, Weaken.lift_of_subst]
   apply substitution
 
+end STLC

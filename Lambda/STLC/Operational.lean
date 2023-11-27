@@ -1,6 +1,8 @@
 import Lambda.Rel
 import Lambda.STLC.Syntax
 
+namespace STLC
+
 open Term in
 @[aesop unsafe [constructors]]
 inductive Step : Rel (Term Γ T) where
@@ -198,3 +200,5 @@ theorem canonical_form_bool {t : Term ∅ TBool} :
   intro h
   apply normal_canonical at h
   cases t <;> simp [CanonicalForm] at h <;> aesop
+
+end STLC
