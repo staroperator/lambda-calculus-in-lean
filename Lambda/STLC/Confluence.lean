@@ -35,20 +35,14 @@ lemma ParStep.multi_step : t ⟹ t' → t ⟶* t' := by
   induction h with
   | var | true | false => apply Rel.Multi.refl
   | lam _ ih | fst _ ih | snd _ ih =>
-    apply Rel.Multi.congr _ ih; aesop
+    apply Rel.Multi.congr ih; aesop
   | app _ _ ih₁ ih₂ | pair _ _ ih₁ ih₂ =>
-    apply Rel.Multi.congr₂ _ _ ih₁ ih₂ <;> aesop
+    apply Rel.Multi.congr₂ ih₁ ih₂ <;> aesop
   | ite _ _ _ ih₁ ih₂ ih₃ =>
-    apply Rel.Multi.congr₃ _ _ _ ih₁ ih₂ ih₃ <;> aesop
+    apply Rel.Multi.congr₃ ih₁ ih₂ ih₃ <;> aesop
   | beta _ _ ih₁ ih₂ =>
     apply Rel.Multi.trans
-    · apply Rel.Multi.congr₂
-      · exact Step.app₁
-      · exact Step.app₂
-      · apply Rel.Multi.congr
-        · exact Step.lam
-        · exact ih₁
-      · exact ih₂
+    · apply Rel.Multi.congr₂ (Rel.Multi.congr ih₁ _) <;> aesop
     · exact Rel.Multi.step Step.beta Rel.Multi.refl
   | sigma₁ | sigma₂ | ite_true | ite_false =>
     constructor <;> aesop

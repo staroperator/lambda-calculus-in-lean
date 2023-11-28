@@ -14,10 +14,10 @@ where
   | 0, x, l => x ∈' l
   | m + 1, x, l => ∀ {y}, ofNatTypeAux m x (y :: l)
 
-def Fin.ofNat (n : Nat) : @Fin.ofNatType α n :=
+@[simp] def Fin.ofNat (n : Nat) : @Fin.ofNatType α n :=
   ofNatAux n fz
 where
-  ofNatAux {x : α} {l : List α} :
+  @[simp] ofNatAux {x : α} {l : List α} :
     (n : Nat) → x ∈' l → ofNatType.ofNatTypeAux n x l
   | 0 => λ h => h
   | n + 1 => λ h {_} => (ofNatAux n (fs h))

@@ -19,35 +19,36 @@ namespace Multi
   induction h₁ <;> aesop
 
 theorem congr {f : T₁ → T} :
+  R₁.Multi t₁ t₂ →
   (∀ {t₁ t₂}, R₁ t₁ t₂ → R (f t₁) (f t₂)) →
-  R₁.Multi t₁ t₂ → R.Multi (f t₁) (f t₂) := by
-  intros h h₁
+  R.Multi (f t₁) (f t₂) := by
+  intros h₁ h
   induction h₁ with
   | refl => constructor
   | step h₁ _ ih => aesop
 
 theorem congr₂ {f : T₁ → T₂ → T} :
+  R₁.Multi t₁ t₁' → R₂.Multi t₂ t₂' →
   (∀ {t₁ t₁' t₂}, R₁ t₁ t₁' → R (f t₁ t₂) (f t₁' t₂)) →
   (∀ {t₂ t₂' t₁}, R₂ t₂ t₂' → R (f t₁ t₂) (f t₁ t₂')) →
-  R₁.Multi t₁ t₁' → R₂.Multi t₂ t₂' →
   R.Multi (f t₁ t₂) (f t₁' t₂') := by
-  intros h h' h₁ h₂
+  intros h₁ h₂ h h'
   trans f t₁' t₂
-  · apply congr _ h₁; aesop
-  · apply congr _ h₂; aesop
+  · apply congr h₁; aesop
+  · apply congr h₂; aesop
 
 theorem congr₃ {f : T₁ → T₂ → T₃ → T} :
+  R₁.Multi t₁ t₁' → R₂.Multi t₂ t₂' → R₃.Multi t₃ t₃' →
   (∀ {t₁ t₁' t₂ t₃}, R₁ t₁ t₁' → R (f t₁ t₂ t₃) (f t₁' t₂ t₃)) →
   (∀ {t₁ t₂ t₂' t₃}, R₂ t₂ t₂' → R (f t₁ t₂ t₃) (f t₁ t₂' t₃)) →
   (∀ {t₁ t₂ t₃ t₃'}, R₃ t₃ t₃' → R (f t₁ t₂ t₃) (f t₁ t₂ t₃')) →
-  R₁.Multi t₁ t₁' → R₂.Multi t₂ t₂' → R₃.Multi t₃ t₃' →
   R.Multi (f t₁ t₂ t₃) (f t₁' t₂' t₃') := by
-  intros h h' h'' h₁ h₂ h₃
+  intros h₁ h₂ h₃ h h' h''
   trans f t₁' t₂ t₃
-  · apply congr _ h₁; aesop
+  · apply congr h₁; aesop
   trans f t₁' t₂' t₃
-  · apply congr _ h₂; aesop
-  · apply congr _ h₃; aesop
+  · apply congr h₂; aesop
+  · apply congr h₃; aesop
 
 end Multi
 
