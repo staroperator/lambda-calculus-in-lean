@@ -1,5 +1,4 @@
 import Lambda.Prelude
-import Mathlib.Tactic.Relation.Trans
 
 def Rel (T : Type u) := T → T → Prop
 
@@ -14,7 +13,7 @@ inductive Multi (R : Rel T) : Rel T where
 
 namespace Multi
 
-@[trans] theorem trans : R.Multi t₁ t₂ → R.Multi t₂ t₃ → R.Multi t₁ t₃ := by
+theorem trans : R.Multi t₁ t₂ → R.Multi t₂ t₃ → R.Multi t₁ t₃ := by
   intros h₁ h₂
   induction h₁ <;> aesop
 
@@ -33,7 +32,7 @@ theorem congr₂ {f : T₁ → T₂ → T} :
   (∀ {t₂ t₂' t₁}, R₂ t₂ t₂' → R (f t₁ t₂) (f t₁ t₂')) →
   R.Multi (f t₁ t₂) (f t₁' t₂') := by
   intros h₁ h₂ h h'
-  trans f t₁' t₂
+  apply trans (t₂ := f t₁' t₂)
   · apply congr h₁; aesop
   · apply congr h₂; aesop
 
@@ -44,9 +43,9 @@ theorem congr₃ {f : T₁ → T₂ → T₃ → T} :
   (∀ {t₁ t₂ t₃ t₃'}, R₃ t₃ t₃' → R (f t₁ t₂ t₃) (f t₁ t₂ t₃')) →
   R.Multi (f t₁ t₂ t₃) (f t₁' t₂' t₃') := by
   intros h₁ h₂ h₃ h h' h''
-  trans f t₁' t₂ t₃
+  apply trans (t₂ := f t₁' t₂ t₃)
   · apply congr h₁; aesop
-  trans f t₁' t₂' t₃
+  apply trans (t₂ := f t₁' t₂' t₃)
   · apply congr h₂; aesop
   · apply congr h₃; aesop
 
@@ -163,5 +162,67 @@ theorem StrongNormal.no_infinite_reduce :
   apply ih
   · rw [←h₁]; apply h₂
   · aesop
+
+inductive StrongNormal' (R : Rel T) : Nat → T → Prop where
+| sn : (∀ t', R t t' → R.StrongNormal' k t') → R.StrongNormal' (k + 1) t
+
+theorem StrongNormal'.strong_normal : R.StrongNormal' k t → R.StrongNormal t := by
+  intro h
+  induction' h with t _ _ ih
+  constructor
+  intros t' h
+  apply ih
+  exact h
+
+theorem StrongNormal'.step : R t t' → R.StrongNormal' k t → ∃ k' < k, R.StrongNormal' k' t' := by
+  intro h ⟨h₁⟩; aesop
+
+theorem StrongNormal'.le : k ≤ k' → R.StrongNormal' k t → R.StrongNormal' k' t := by
+  intros h h₁
+  induction' h₁ with t _ _ ih generalizing k'
+  cases k'
+  · simp [Nat.not_succ_le_zero] at h
+  · simp [Nat.succ_le_succ_iff] at h
+    constructor; aesop
+
+def Finite (R : Rel T) :=
+  ∀ t, ∃ (l : List T), ∀ t', R t t' ↔ t' ∈ l
+
+theorem StrongNormal.strong_normal' :
+  R.Finite → R.StrongNormal t → ∃ k, R.StrongNormal' k t := by
+  intro h h₁
+  induction' h₁ with t _ ih₁
+  -- rcases h with ⟨f, h⟩
+  rcases h t with ⟨l, h₁⟩
+  have h₂ : ∀ t' ∈ l, ∃ k, R.StrongNormal' k t' := by
+    intro t' h₃
+    apply ih₁
+    rw [h₁]
+    exact h₃
+  have h₃ : ∃ k, ∀ t' ∈ l, R.StrongNormal' k t' := by
+    clear h₁ ih₁
+    induction' l with t' l ih₂
+    · exists 0; aesop
+    · rcases h₂ t' (List.Mem.head _) with ⟨k₁, h₃⟩
+      have h₄ : ∀ t' ∈ l, ∃ k, StrongNormal' R k t' := by
+        intro t' h
+        rcases h₂ t' (List.Mem.tail _ h) with ⟨k, h'⟩
+        exists k
+      apply ih₂ at h₄
+      rcases h₄ with ⟨k₂, h₄⟩
+      exists max k₁ k₂
+      intro t'' h
+      cases h
+      · exact StrongNormal'.le (Nat.le_max_left _ _) h₃
+      · apply StrongNormal'.le (Nat.le_max_right _ _)
+        apply h₄
+        assumption
+  rcases h₃ with ⟨k, h₃⟩
+  exists k + 1
+  constructor
+  intro t' h
+  apply h₃
+  rw [←h₁]
+  exact h
 
 end Rel
