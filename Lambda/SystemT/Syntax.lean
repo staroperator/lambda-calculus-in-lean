@@ -8,7 +8,7 @@ inductive Ty where
 | nat : Ty
 | fn : Ty → Ty → Ty
 | prod : Ty → Ty → Ty
-infixr:70 " ⇒ " => Ty.fn
+infixr:70 (priority := high) " ⇒ " => Ty.fn
 instance : Mul Ty := ⟨Ty.prod⟩
 @[match_pattern] abbrev TBool := Ty.bool
 @[match_pattern] abbrev TNat := Ty.nat

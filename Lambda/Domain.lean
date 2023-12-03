@@ -1,9 +1,8 @@
--- import Std.Order.Basic
 import Mathlib.Data.Set.Prod
 import Mathlib.Order.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Tactic.ApplyAt
+import Lambda.Prelude
 
 lemma Set.comp_image {f : β → γ} {g : α → β} {s : Set α} : f '' (g '' s) = f ∘ g '' s := by
   ext x; constructor
@@ -614,7 +613,7 @@ def S : (α →ᴰ β →ᴰ γ) →ᴰ (α →ᴰ β) →ᴰ α →ᴰ γ where
               (Directed'.mono_image hs (λ _ _ h => (f x).2.mono (g.2.mono h))))
             (Directed'.mono_image hs (λ _ _ h => Dcpo.iSupMem.mono
               (λ _ _ => f.2.mono h _)))
-          · congr; funext x; apply (f x).2.keeps_iSupMem
+          · congr; ext x; apply (f x).2.keeps_iSupMem
           · apply le_antisymm
             · apply Dcpo.iSupMem_le
               intros x h₁

@@ -192,7 +192,6 @@ theorem StrongNormal.strong_normal' :
   R.Finite → R.StrongNormal t → ∃ k, R.StrongNormal' k t := by
   intro h h₁
   induction' h₁ with t _ ih₁
-  -- rcases h with ⟨f, h⟩
   rcases h t with ⟨l, h₁⟩
   have h₂ : ∀ t' ∈ l, ∃ k, R.StrongNormal' k t' := by
     intro t' h₃
@@ -224,5 +223,37 @@ theorem StrongNormal.strong_normal' :
   apply h₃
   rw [←h₁]
   exact h
+
+def Deterministic (R : Rel T) :=
+  ∀ t t₁ t₂, R t t₁ → R t t₂ → t₁ = t₂
+
+theorem Deterministic.finite : R.Deterministic → R.Finite := by
+  intro h t
+  rcases Classical.exists_or_forall_not (R t) with ⟨t', h₁⟩ | h₁
+  · exists [t']
+    intro t''; constructor
+    · intro h₂
+      rw [h _ _ _ h₁ h₂]
+      simp
+    · intro h₂
+      simp at h₂; rw [h₂]
+      exact h₁
+  · exists []
+    intro t''; constructor
+    · intro h₂; exfalso; apply h₁; exact h₂
+    · intro h₂; cases h₂
+
+theorem Deterministic.diamond : R.Deterministic → R.Multi.Diamond := by
+  intro h t t₁ t₂ h₁ h₂
+  induction h₁ with
+  | refl => exact ⟨_, h₂, Multi.refl⟩
+  | step h₁ h₁' ih =>
+    cases h₂ with
+    | refl => exact ⟨_, Multi.refl, Multi.step h₁ h₁'⟩
+    | step h₂ h₂' =>
+      have h₃ := h _ _ _ h₁ h₂
+      subst h₃
+      exact ih h₂'
+
 
 end Rel

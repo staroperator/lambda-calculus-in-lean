@@ -125,7 +125,7 @@ lemma StrongNormal.succ :
 
 def R : (T : Ty) → Term Γ T → Prop
 | TBool, t | TNat, t => StrongNormal t
-| Ty.fn T₁ T₂, t => ∀ Δ (ρ : Γ ⊆ʷ Δ) t', R T₁ t' → R T₂ (t[ρ]ʷ ⬝ t')
+| T₁ ⇒ T₂, t => ∀ Δ (ρ : Γ ⊆ʷ Δ) t', R T₁ t' → R T₂ (t[ρ]ʷ ⬝ t')
 | T₁ * T₂, t => R T₁ (Term.fst t) ∧ R T₂ (Term.snd t)
 
 def Rsub (Δ : Con) (σ : Subst Γ Δ) : Prop :=
