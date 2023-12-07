@@ -230,7 +230,7 @@ lemma Term.subst_comp_weaken {ρ : Δ ⊆ʷ Θ} :
         rw [←weaken_eq_subst]
       simp [weaken_comp_subst]
       congr
-      funext x
+      funext _ x
       cases x <;> simp [Subst.comp, Weaken.ofSubst]
   all_goals aesop
 
@@ -238,7 +238,7 @@ theorem Term.shift_subst_lift :
   (↑ₜt : Term (Γ,' T') T)[⇑σ]ˢ = ↑ₜ(t[σ]ˢ) := by
   simp [Term.shift, weaken_comp_subst, subst_comp_weaken]
   congr
-  funext x
+  funext _ x
   simp [Subst.comp, Subst.lift, Term.shift, weaken_eq_subst]
 
 theorem Term.subst_comp {σ₂ : Subst Δ Θ} :
@@ -258,7 +258,7 @@ theorem Term.shift_subst_single : (↑ₜt)[↦ t']ˢ = t := by
   simp [Term.shift, weaken_comp_subst]
   conv => rhs; rw [←subst_id (t := t)]
   congr
-  funext x
+  funext _ x
   cases x <;> simp [Subst.comp, Subst.single, Subst.id]
 
 lemma substitution :

@@ -163,7 +163,6 @@ theorem Term.denot_subst_single {t₁ : Term (Γ,' T₁) T₂} :
   ⟦t₁[↦ t₂]ˢ⟧ᵗ = Domain.S (Domain.curry ⟦t₁⟧ᵗ) ⟦t₂⟧ᵗ := by
   ext g; simp [Term.denot_subst, Subst.denot]
   congr!
-  simp [Subst.tail, Subst.single]
   apply Con.denot_ext
   intros T x
   simp [←Subst.denot_apply, Term.denot]
