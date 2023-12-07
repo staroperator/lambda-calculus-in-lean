@@ -22,8 +22,6 @@ inductive ParStep : Rel (Term Γ T) where
 | recn_zero : ParStep t₂ t₂' → ParStep (recn zero t₂ t₃) t₂'
 | recn_succ : ParStep t₁ t₁' → ParStep t₂ t₂' → ParStep t₃ t₃' → 
   ParStep (recn (succ t₁) t₂ t₃) (t₃' ⬝ t₁' ⬝ (recn t₁' t₂' t₃'))
--- | recn_succ : ParStep t₁ (succ t₁') → ParStep t₂ t₂' → ParStep t₃ t₃' →
---   ParStep (recn t₁ t₂ t₃) (t₃' ⬝ t₁' ⬝ (recn t₁' t₂' t₃'))
 | pair : ParStep t₁ t₁' → ParStep t₂ t₂' → ParStep ⟪t₁, t₂⟫ ⟪t₁', t₂'⟫
 | fst : ParStep t t' → ParStep t.fst t'.fst
 | snd : ParStep t t' → ParStep t.snd t'.snd
