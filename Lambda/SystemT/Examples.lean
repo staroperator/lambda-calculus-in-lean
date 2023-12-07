@@ -3,6 +3,8 @@ import Lambda.SystemT.Denotational
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Computability.Ackermann
 
+open List.Fin (fz fs)
+
 namespace SystemT
 
 open Term

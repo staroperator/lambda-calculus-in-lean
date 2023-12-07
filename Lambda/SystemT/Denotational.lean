@@ -1,5 +1,7 @@
 import Lambda.SystemT.Operational
 
+open List.Fin (fz fs)
+
 namespace SystemT
 
 def Ty.denot : Ty → Type

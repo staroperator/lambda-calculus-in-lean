@@ -1,6 +1,8 @@
 import Lambda.PCF.Operational
 import Lambda.Domain
 
+open List.Fin (fz fs)
+
 noncomputable section
 
 namespace Domain

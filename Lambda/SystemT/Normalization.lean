@@ -1,6 +1,8 @@
 import Lambda.SystemT.Operational
 import Mathlib.Data.Nat.Basic
 
+open List.Fin (fz fs)
+
 namespace SystemT
 
 def StrongNormal (t : Term Γ T) := Step.StrongNormal t

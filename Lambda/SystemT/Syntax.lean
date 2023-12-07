@@ -1,6 +1,8 @@
 import Lambda.Prelude
 import Lambda.Fin
 
+open List.Fin (fz fs)
+
 namespace SystemT
 
 inductive Ty where

@@ -1,5 +1,7 @@
 import Lambda.STLC.Operational
 
+open List.Fin (fz fs)
+
 namespace STLC
 
 def StrongNormal (t : Term Γ T) := Step.StrongNormal t
