@@ -21,3 +21,8 @@ import Lambda.SystemT.Denotational
 import Lambda.SystemT.Examples
 
 import Lambda.Domain
+
+import Lambda.PCF.Syntax
+import Lambda.PCF.Operational
+import Lambda.PCF.Denotational
+import Lambda.PCF.Adequacy

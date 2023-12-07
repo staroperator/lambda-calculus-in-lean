@@ -130,6 +130,18 @@ theorem sSup_le {s : Set α} {hs} : (∀ y ∈ s, y ≤ x) → sSup s hs ≤ x :
   apply (Dcpo.sSup_is_lub s _).right
   exact h
 
+theorem sSup_singleton {x : α} :
+  sSup {x} Directed'.singleton = x := by
+  apply le_antisymm
+  · apply sSup_le; simp
+  · apply le_sSup; simp
+
+theorem sSup_pair {x y : α} (h : x ≤ y) :
+  sSup {x, y} (Directed'.pair h) = y := by
+  apply le_antisymm
+  · apply sSup_le; simp; exact h
+  · apply le_sSup; simp
+
 def iSup (f : ι → α) (hf : Directed' (Set.range f)) :=
   sSup (Set.range f) hf
 
@@ -147,7 +159,7 @@ theorem iSup_le {f : ι → α} {hf} :
   subst h'
   apply h
 
-theorem iSup.mono {f g : ι → α} {hf hg} :
+theorem iSup_mono {f g : ι → α} {hf hg} :
   (∀ i, f i ≤ g i) → iSup f hf ≤ iSup g hg := by
   intro h
   apply iSup_le
@@ -159,6 +171,12 @@ def iSupMem (s : Set ι) (f : ι → α) (hf : Directed' (f '' s)) :=
   sSup (f '' s) hf
 
 theorem iSupMem.sSup {f : ι → α} {hf} : sSup (f '' s) hf = iSupMem s f hf := rfl
+
+theorem iSupMem.iSup_univ {f : ι → α} {hf : Directed' (Set.range f)} :
+  iSup f hf = iSupMem Set.univ f (by rw [Set.image_univ]; exact hf) := by
+  unfold iSup iSupMem
+  congr
+  rw [Set.image_univ]
 
 theorem le_iSupMem {f : ι → α} {hf} :
   i ∈ s → f i ≤ iSupMem s f hf := by
@@ -175,31 +193,19 @@ theorem iSupMem_le {f : ι → α} {hf} :
   apply h
   exact h'
 
-theorem iSupMem.comp {s : Set ι} {f : α → β} {g : ι → α} {hf} :
+theorem iSupMem_comp {s : Set ι} {f : α → β} {g : ι → α} {hf} :
   iSupMem (g '' s) f hf = iSupMem s (f ∘ g) (by rw [←Set.comp_image]; exact hf) := by
   unfold iSupMem
   congr
   rw [Set.comp_image]
 
-theorem iSupMem.mono {s : Set ι} {f g : ι → α} {hf} {hg} :
+theorem iSupMem_mono {s : Set ι} {f g : ι → α} {hf} {hg} :
   (∀ i ∈ s, f i ≤ g i) → iSupMem s f hf ≤ iSupMem s g hg := by
   intro h
   apply iSupMem_le
   intros i h'
   apply le_trans (h i h')
   exact le_iSupMem h'
-
-theorem sSup.singleton {x : α} :
-  sSup {x} Directed'.singleton = x := by
-  apply le_antisymm
-  · apply sSup_le; simp
-  · apply le_sSup; simp
-
-theorem sSup.pair {x y : α} (h : x ≤ y) :
-  sSup {x, y} (Directed'.pair h) = y := by
-  apply le_antisymm
-  · apply sSup_le; simp; exact h
-  · apply le_sSup; simp
 
 end Dcpo
 
@@ -314,7 +320,7 @@ theorem Prod.iSupMem {s : Set ι} {f : ι → α ×ᴰ β} {hf} :
   ⟩ := by
   trans
   · apply sSup
-  · congr <;> apply Dcpo.iSupMem.comp
+  · congr <;> apply Dcpo.iSupMem_comp
 
 noncomputable def Flat (α : Type u) : Domain :=
   let instLE : LE (Option α) := {
@@ -404,29 +410,29 @@ lemma directed_cases (hs : Directed' s) :
         · congr; exact directed_some_unique hs h h₂
       · aesop
 
-theorem sSup_eq_some {hs} :
-  Dcpo.sSup s hs = some x → s = {some x} ∨ s = {⊥, some x} := by
-  intro h
-  rcases directed_cases hs with h₁ | h₁ | h₁
-  · exfalso; subst h₁
-    simp [Dcpo.sSup.singleton] at h
-    contradiction
-  · left; cases' h₁ with y h₁; subst h₁
-    simp [Dcpo.sSup.singleton] at h
-    simp [h]
-  · right; cases' h₁ with y h₁; subst h₁
-    simp [Dcpo.sSup.pair bot_le] at h
-    simp [h]
+theorem sup_mem {hs} : Dcpo.sSup s hs ∈ s := by
+  rcases directed_cases hs with h | ⟨x, h⟩ | ⟨x, h⟩ <;>
+    subst h <;> simp [Dcpo.sSup_singleton, Dcpo.sSup_pair bot_le]
 
-theorem sSup_eq_none {hs} :
-  Dcpo.sSup s hs = none → s = {⊥} := by
-  intro h
-  rcases directed_cases hs with h₁ | h₁ | h₁
-  · exact h₁
-  · cases' h₁ with y h₁; subst h₁
-    simp [Dcpo.sSup.singleton] at h
-  · cases' h₁ with y h₁; subst h₁
-    simp [Dcpo.sSup.pair bot_le] at h
+theorem sup_cases (hs : Directed' s) :
+  Dcpo.sSup s hs = ⊥ ∨ ∃ x, some x ∈ s ∧ s ⊆ {⊥, some x} ∧ Dcpo.sSup s hs = some x := by
+  rcases directed_cases hs with h | ⟨x, h⟩ | ⟨x, h⟩
+  · simp [h, Dcpo.sSup_singleton]
+  · simp [h, Dcpo.sSup_singleton]
+  · simp [h, Dcpo.sSup_pair bot_le]
+    right; exists x; simp; apply Set.Subset.refl
+
+theorem mono_continuous {f : Flat α → β}
+  (h : Monotone f) : Continuous f where
+  mono := h
+  keeps_sSup := by
+    intro s hs
+    rcases directed_cases hs with h₁ | ⟨x, h₁⟩ | ⟨x, h₁⟩ <;>
+      subst h₁ <;> unfold Dcpo.iSupMem <;>
+      simp [
+        Set.image_singleton, Set.image_pair,
+        Dcpo.sSup_singleton, Dcpo.sSup_pair bot_le,
+        Dcpo.sSup_pair (h bot_le)]
 
 end Flat
 
@@ -443,7 +449,7 @@ def ContinuousMap (α β : Domain) : Domain where
       property := {
         mono := by
           intros x y h
-          apply Dcpo.iSupMem.mono
+          apply Dcpo.iSupMem_mono
           intros f _
           exact f.2.mono h
         keeps_sSup := by
@@ -452,7 +458,7 @@ def ContinuousMap (α β : Domain) : Domain where
           · apply Dcpo.iSupMem_le
             intros f h₁
             rw [f.2.keeps_sSup]
-            apply Dcpo.iSupMem.mono
+            apply Dcpo.iSupMem_mono
             intros x _
             apply Dcpo.le_iSupMem h₁
           · apply Dcpo.iSupMem_le
@@ -515,7 +521,7 @@ theorem ContinuousMap.iSupMem {s : Set ι} {f : ι → α →ᴰ β} {hf} :
   (Dcpo.iSupMem s f hf) x = Dcpo.iSupMem s (λ i => f i x) (Directed'.mono_comp_image hf Monotone.apply) := by
   trans
   · apply sSup
-  · apply Dcpo.iSupMem.comp
+  · apply Dcpo.iSupMem_comp
 
 def pair : α →ᴰ β →ᴰ α ×ᴰ β where
   val := λ x => {
@@ -526,7 +532,7 @@ def pair : α →ᴰ β →ᴰ α ×ᴰ β where
         intro s hs
         simp [Prod.iSupMem]
         congr
-        · conv => lhs; rw [←Dcpo.sSup.singleton (x := x)]
+        · conv => lhs; rw [←Dcpo.sSup_singleton (x := x)]
           congr; ext _; constructor
           · intro h; cases h; simp; exact hs.1
           · intro ⟨y, _, h⟩; subst h; rfl
@@ -542,7 +548,7 @@ def pair : α →ᴰ β →ᴰ α ×ᴰ β where
       congr; funext y; simp [Prod.iSupMem]
       constructor
       · congr; ext x; simp
-      · conv => lhs; rw [←Dcpo.sSup.singleton (x := y)]
+      · conv => lhs; rw [←Dcpo.sSup_singleton (x := y)]
         congr; ext _; constructor
         · intro h; cases h; simp; exact hs.1
         · intro ⟨f, ⟨x, _, h⟩, h'⟩; subst h h'; simp
@@ -580,7 +586,7 @@ def K : α →ᴰ β →ᴰ α where
       mono := λ _ _ _ => le_refl _
       keeps_sSup := by
         intro s hs
-        conv => lhs; rw [←Dcpo.sSup.singleton (x := x)]
+        conv => lhs; rw [←Dcpo.sSup_singleton (x := x)]
         congr; ext x'; constructor
         · intro h; cases h; simp; exact hs.1
         · intro ⟨x', _, h⟩; subst h; rfl
@@ -611,7 +617,7 @@ def S : (α →ᴰ β →ᴰ γ) →ᴰ (α →ᴰ β) →ᴰ α →ᴰ γ where
           trans Dcpo.iSupMem s
             (λ x => Dcpo.iSupMem s (λ y => f x (g y))
               (Directed'.mono_image hs (λ _ _ h => (f x).2.mono (g.2.mono h))))
-            (Directed'.mono_image hs (λ _ _ h => Dcpo.iSupMem.mono
+            (Directed'.mono_image hs (λ _ _ h => Dcpo.iSupMem_mono
               (λ _ _ => f.2.mono h _)))
           · congr; ext x; apply (f x).2.keeps_iSupMem
           · apply le_antisymm
@@ -635,7 +641,7 @@ def S : (α →ᴰ β →ᴰ γ) →ᴰ (α →ᴰ β) →ᴰ α →ᴰ γ where
         intro s hs
         congr; ext x
         simp [ContinuousMap.sSup]
-        rw [(f x).2.keeps_iSupMem, Dcpo.iSupMem.comp]
+        rw [(f x).2.keeps_iSupMem, Dcpo.iSupMem_comp]
         congr
     }
   }
@@ -645,7 +651,7 @@ def S : (α →ᴰ β →ᴰ γ) →ᴰ (α →ᴰ β) →ᴰ α →ᴰ γ where
       intros s hs
       congr; ext g x
       simp [ContinuousMap.sSup, ContinuousMap.iSupMem]
-      rw [Dcpo.iSupMem.comp]
+      rw [Dcpo.iSupMem_comp]
       congr
   }
 @[simp] theorem S.apply : S f g x = f x (g x) := rfl
@@ -715,7 +721,7 @@ def fix : (α →ᴰ α) →ᴰ α where
   property := {
     mono := by
       intros f g h
-      apply Dcpo.iSup.mono
+      apply Dcpo.iSup_mono
       intro n
       apply iter_mono' h
     keeps_sSup := by
