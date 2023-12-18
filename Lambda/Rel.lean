@@ -163,6 +163,27 @@ theorem StrongNormal.no_infinite_reduce :
   · rw [←h₁]; apply h₂
   · aesop
 
+theorem StrongNormal.strong_induction {P : T → Prop} :
+  R.StrongNormal t → 
+  ((∀ {t}, (∀ t' t'', R t t' → R.Multi t' t'' → P t'') → P t)) →
+  P t := by
+  intro h₁ h
+  suffices h₂ : (∀ t', R.Multi t t' → P t') by
+    apply h₂; constructor
+  intro t' h₂
+  induction' h₁ with t _ ih generalizing t'
+  cases h₂ with
+  | refl =>
+    apply h
+    intro t' t'' h₁ h₂
+    apply ih
+    · exact h₁
+    · exact h₂
+  | step h₂ h₂' =>
+    apply ih
+    · exact h₂
+    · exact h₂'
+
 inductive StrongNormal' (R : Rel T) : Nat → T → Prop where
 | sn : (∀ t', R t t' → R.StrongNormal' k t') → R.StrongNormal' (k + 1) t
 
@@ -255,5 +276,25 @@ theorem Deterministic.diamond : R.Deterministic → R.Multi.Diamond := by
       subst h₃
       exact ih h₂'
 
+lemma newman :
+  (∀ t, R.StrongNormal t) →
+  (∀ t t₁ t₂, R t t₁ → R t t₂ → ∃ t', R.Multi t₁ t' ∧ R.Multi t₂ t') →
+  R.Multi.Diamond := by
+  intro h h' t
+  apply StrongNormal.strong_induction (h t)
+  intro t ih t₁ t₂ h₁ h₂
+  cases h₁ with
+  | refl => exact ⟨_, h₂, Multi.refl⟩
+  | step h₁ h₁' =>
+    cases h₂ with
+    | refl => exact ⟨_, Multi.refl, Multi.step h₁ h₁'⟩
+    | step h₂ h₂' =>
+      rcases h' _ _ _ h₁ h₂ with ⟨t₃, h₃, h₄⟩
+      rcases ih _ _ h₁ Multi.refl h₁' h₃ with ⟨t₄, h₅, h₆⟩
+      rcases ih _ _ h₂ Multi.refl h₂' h₄ with ⟨t₅, h₇, h₈⟩
+      rcases ih _ _ h₁ h₃ h₆ h₈ with ⟨t', h₉, h₁₀⟩
+      exists t'; constructor
+      · exact Multi.trans h₅ h₉
+      · exact Multi.trans h₇ h₁₀
 
 end Rel
