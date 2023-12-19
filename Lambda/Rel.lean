@@ -1,3 +1,4 @@
+import Mathlib.Order.Iterate
 import Lambda.Prelude
 
 def Rel (T : Type u) := T → T → Prop
@@ -154,14 +155,35 @@ theorem StrongNormal.weak_normal : R.StrongNormal t → R.WeakNormal t := by
     apply ih; exact h
   · exact WeakNormal.of_normal h
 
-theorem StrongNormal.no_infinite_reduce :
-  R.StrongNormal t →
+theorem StrongNormal.iff_no_infinite_sequence :
+  R.StrongNormal t ↔
   ¬ ∃ (f : Nat → T), f 0 = t ∧ ∀ n, R (f n) (f (n + 1)) := by
-  intro h; induction' h with t _ ih
-  intro ⟨f, h₁, h₂⟩
-  apply ih
-  · rw [←h₁]; apply h₂
-  · aesop
+  constructor
+  · intro h; induction' h with t _ ih
+    intro ⟨f, h₁, h₂⟩
+    apply ih
+    · rw [←h₁]; apply h₂
+    · aesop
+  · intro h₁; by_contra h₂; apply h₁
+    let T' := { t // ¬ R.StrongNormal t }
+    let next (t : T') : T' := by
+      apply Classical.choose (p := λ t' => R t.val t'.val)
+      by_contra h₁
+      apply forall_not_of_not_exists at h₁
+      rcases t with ⟨t, h⟩
+      apply h
+      constructor
+      intro t' h₂
+      by_contra h₃
+      have h₄ := h₁ ⟨t', h₃⟩
+      contradiction
+    let seq (n : Nat) : T' :=
+      n.recAuxOn ⟨t, h₂⟩ (λ _ ih => next ih)
+    exists λ n => (seq n).val
+    constructor
+    · rfl
+    · intro n
+      apply Classical.choose_spec (p := λ _ => R _ _)
 
 theorem StrongNormal.strong_induction {P : T → Prop} :
   R.StrongNormal t → 
@@ -280,9 +302,8 @@ lemma newman :
   (∀ t, R.StrongNormal t) →
   (∀ t t₁ t₂, R t t₁ → R t t₂ → ∃ t', R.Multi t₁ t' ∧ R.Multi t₂ t') →
   R.Multi.Diamond := by
-  intro h h' t
-  apply StrongNormal.strong_induction (h t)
-  intro t ih t₁ t₂ h₁ h₂
+  intro h h' t t₁ t₂ h₁ h₂
+  induction' h t with t _ ih generalizing t₁ t₂
   cases h₁ with
   | refl => exact ⟨_, h₂, Multi.refl⟩
   | step h₁ h₁' =>
@@ -290,11 +311,10 @@ lemma newman :
     | refl => exact ⟨_, Multi.refl, Multi.step h₁ h₁'⟩
     | step h₂ h₂' =>
       rcases h' _ _ _ h₁ h₂ with ⟨t₃, h₃, h₄⟩
-      rcases ih _ _ h₁ Multi.refl h₁' h₃ with ⟨t₄, h₅, h₆⟩
-      rcases ih _ _ h₂ Multi.refl h₂' h₄ with ⟨t₅, h₇, h₈⟩
-      rcases ih _ _ h₁ h₃ h₆ h₈ with ⟨t', h₉, h₁₀⟩
+      rcases ih _ h₁ h₁' h₃ with ⟨t₄, h₅, h₆⟩
+      rcases ih _ h₂ h₂' (Multi.trans h₄ h₆) with ⟨t', h₇, h₈⟩
       exists t'; constructor
-      · exact Multi.trans h₅ h₉
-      · exact Multi.trans h₇ h₁₀
+      · exact Multi.trans h₅ h₈
+      · exact h₇
 
 end Rel
